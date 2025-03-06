@@ -1,89 +1,52 @@
-package com.hatchways.blogposts.model;
+package com.hatchways.blogposts.model
 
-import java.util.Collection;
-import java.util.Set;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import javax.persistence.*
 
 @Entity
 @Table(
-    uniqueConstraints = {
-      @UniqueConstraint(columnNames = {"username"}),
-      @UniqueConstraint(columnNames = {"password"})
-    })
-public class User implements UserDetails {
+    uniqueConstraints = [
+        UniqueConstraint(columnNames = ["username"]),
+        UniqueConstraint(columnNames = ["password"])
+    ]
+)
+data class User(
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
+    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", initialValue = 6)
+    val id: Long? = null,
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
-  @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", initialValue = 6)
-  private Long id;
+    @Column(nullable = false, unique = true)
+    private var username: String,
 
-  private String username;
+    @Column(nullable = false)
+    private var password: String,
 
-  private String password;
+    @ManyToMany(mappedBy = "users")
+    var posts: Set<Post>? = null
+) : UserDetails {
 
-  @ManyToMany(mappedBy = "users")
-  private Set<Post> posts;
+    constructor() : this("", "")
 
-  public User() {}
+    constructor(username: String, password: String) : this(
+        id = null,
+        username = username,
+        password = password,
+        posts = null
+    )
 
-  public User(String username, String password) {
-    this.username = username;
-    this.password = password;
-  }
+    override fun getAuthorities(): Collection<GrantedAuthority>? = null
 
-  public Long getId() {
-    return id;
-  }
+    override fun getPassword(): String = password
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    override fun getUsername(): String = username
 
-  public Set<Post> getPosts() {
-    return posts;
-  }
+    override fun isAccountNonExpired(): Boolean = true
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return null;
-  }
+    override fun isAccountNonLocked(): Boolean = true
 
-  @Override
-  public String getPassword() {
-    return password;
-  }
+    override fun isCredentialsNonExpired(): Boolean = true
 
-  @Override
-  public String getUsername() {
-    return username;
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
+    override fun isEnabled(): Boolean = true
 }

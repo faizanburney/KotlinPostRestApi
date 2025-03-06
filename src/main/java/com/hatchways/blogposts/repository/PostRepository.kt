@@ -1,14 +1,14 @@
-package com.hatchways.blogposts.repository;
+package com.hatchways.blogposts.repository
 
-import com.hatchways.blogposts.model.Post;
-import java.util.List;
-import org.springframework.data.jpa.repository.Query;
+import com.hatchways.blogposts.model.Post
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.stereotype.Repository
 
+@Repository
+interface PostRepository : JpaRepository<Post, Long> {
 
-@org.springframework.stereotype.Repository
-public interface PostRepository extends org.springframework.data.jpa.repository.JpaRepository<Post, Long>  {
   @Query("SELECT p FROM Post p JOIN p.users user WHERE user.id in :userId")
-  List<Post> findAllByUserId(List<Long> userId);
+  fun findAllByUserId(userId: List<Long>): List<Post>
 
-  List<Post> findAll();
 }

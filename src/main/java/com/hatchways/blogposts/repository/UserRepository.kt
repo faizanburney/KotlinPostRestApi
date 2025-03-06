@@ -1,13 +1,16 @@
-package com.hatchways.blogposts.repository;
+package com.hatchways.blogposts.repository
 
-import com.hatchways.blogposts.model.User;
-import java.util.List;
+import com.hatchways.blogposts.model.User
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.stereotype.Repository
 
-@org.springframework.stereotype.Repository
-public interface UserRepository extends org.springframework.data.jpa.repository.JpaRepository<User, Long> {
-  @org.springframework.data.jpa.repository.Query("SELECT u from User as u where u.username = :username")
-  User findByUsername(String username);
+@Repository
+interface UserRepository : JpaRepository<User, Long> {
 
-  @org.springframework.data.jpa.repository.Query("SELECT u.id from User as u where u.id in :ids")
-  List<Long> findByIdIn(List<Long> ids);
+  @Query("SELECT u from User as u where u.username = :username")
+  fun findByUsername(username: String): User?
+
+  @Query("SELECT u.id from User as u where u.id in :ids")
+  fun findByIdIn(ids: List<Long>): List<Long>
 }
